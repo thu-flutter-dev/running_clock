@@ -8,84 +8,35 @@ void main() {
   runApp(const MaterialApp(
       home: Scaffold(
           body: Center(
-    child: ClickableAnimatedClockView(),
+    child: ClickableClickView(),
   ))));
 }
 
-class ClickableAnimatedClockView extends StatefulWidget {
-  const ClickableAnimatedClockView({super.key});
+class ClickableClickView extends StatefulWidget {
+  const ClickableClickView({super.key});
 
   @override
-  State<ClickableAnimatedClockView> createState() =>
-      _ClickableAnimatedClockViewState();
+  State<ClickableClickView> createState() => _ClickableClickViewState();
 }
 
-class _ClickableAnimatedClockViewState extends State<ClickableAnimatedClockView>
-    with TickerProviderStateMixin {
-  late int seconds;
-  late final AnimationController controller;
-
-  @override
-  void initState() {
-    super.initState();
-    seconds = 0;
-    controller = AnimationController(
-      duration: const Duration(seconds: 1),
-      vsync: this,
-    );
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-    super.dispose();
-  }
+class _ClickableClickViewState extends State<ClickableClickView> {
+  double seconds = 0.0;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        debugPrint("user tapped");
-        debugPrint("current animation status: ${controller.status}");
-        switch (controller.status) {
-          case AnimationStatus.dismissed:
-            debugPrint("start animation for 1 second");
-            controller.forward().whenComplete(() {
-              debugPrint("completed");
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: 0, end: seconds),
+      duration: const Duration(seconds: 1),
+      builder: (BuildContext context, double tweenSeconds, Widget? child) {
+        return GestureDetector(
+            onTap: () {
               setState(() {
                 seconds += 1;
-                if (seconds == 60) {
-                  seconds = 0;
-                }
               });
-              controller.reset();
-            });
-            break;
-          default:
-        }
+            },
+            child: ClockView(seconds: tweenSeconds));
       },
-      child: AnimatedClockView(
-        controller: controller,
-        intSeconds: seconds,
-      ),
     );
-  }
-}
-
-class AnimatedClockView extends AnimatedWidget {
-  final int intSeconds;
-
-  const AnimatedClockView({
-    super.key,
-    required AnimationController controller,
-    required this.intSeconds,
-  }) : super(listenable: controller);
-
-  double get seconds => intSeconds + (listenable as Animation<double>).value;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClockView(seconds: seconds);
   }
 }
 
