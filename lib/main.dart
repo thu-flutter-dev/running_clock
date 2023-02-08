@@ -54,15 +54,13 @@ class _ClickableAnimatedClockViewState extends State<ClickableAnimatedClockView>
               debugPrint("completed");
               setState(() {
                 seconds += 1;
+                if (seconds == 60) {
+                  seconds = 0;
+                }
               });
-              if (seconds == 60) {
-                seconds = 0;
-              }
               controller.reset();
             });
             break;
-          case AnimationStatus.forward:
-
           default:
         }
       },
